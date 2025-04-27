@@ -478,29 +478,45 @@
                 return;
             }
             if (isActionPlaying) return;
+
+            let clientX, clientY;
+            if (event.type.startsWith('touch')) {
+                // 触屏：从 touches[0] 拿坐标
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                // 鼠标：直接拿
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+
             // 更新鼠标坐标（归一化）
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            mouse.x = (clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
 
-            const intersectsBody = raycaster.intersectObject(body, true); // true表示包括子对象
+            const intersectsBody = raycaster.intersectObject(body, true);
             const intersectsHead = raycaster.intersectObject(headGroup, true);
             if (intersectsBody.length > 0 || intersectsHead.length > 0) {
-                // 点到了IP形象（头）
                 triggerTickle();
             } else {
-                // 没点到，正常进入拖动
                 isPressing = true;
-                updateHeadDirection(event);
+                updateHeadDirection({
+                    clientX,
+                    clientY
+                }); // 这里也要传对
                 window.addEventListener('mousemove', updateHeadDirection);
+                window.addEventListener('touchmove', updateHeadDirection); // 还要加这一行
             }
         }
 
         function onPressEnd(event) {
             isPressing = false;
             window.removeEventListener('mousemove', updateHeadDirection);
+            window.removeEventListener('touchmove', updateHeadDirection);
         }
+
 
         function updateHeadDirection(event) {
             if (!isPressing) return;
