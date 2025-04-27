@@ -7,16 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
     <style>
         @font-face {
-            font-family: 'AlibabaPuHuiTi';
-            src: url('assets/fonts/AlibabaSans-Bold.otf') format('woff2'),
-                url('assets/fonts/AlibabaSans-Regular.otf') format('woff'),
-                url('assets/fonts/AlibabaSans-Medium.otf') format('truetype');
+            font-family: 'AlibabaSans';
+            src: url('assets/fonts/AlibabaSans-Regular.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
         }
 
         body {
-            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'AlibabaSans', sans-serif;
             font-weight: 400;
             margin: 0;
             overflow: hidden;
@@ -65,7 +63,7 @@
 
         /* 公共部分，所有屏幕都用 */
         .buttons .button button {
-            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'AlibabaSans', sans-serif;
             font-weight: 500;
             z-index: 10;
             position: absolute;
@@ -256,6 +254,8 @@
             window.addEventListener('mousedown', onPressStart);
             window.addEventListener('mouseup', onPressEnd);
 
+            window.addEventListener('touchstart', onPressStart);
+            window.addEventListener('touchend', onPressEnd);
         }
 
         // 适应窗口大小变化
