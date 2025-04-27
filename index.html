@@ -50,6 +50,8 @@ function init() {
   loader.load('assets/hunban-head.glb', function(gltf) {
     head = gltf.scene;
     scene.add(head);
+    console.log(head.position);
+
   });
 
   window.addEventListener('mousemove', onMouseMove);
@@ -66,8 +68,8 @@ function onWindowResize() {
 function onMouseMove(event) {
   const x = (event.clientX / window.innerWidth) * 2 - 1;
   const y = -(event.clientY / window.innerHeight) * 2 + 1;
-  targetRotation.y = x * 0.5;
-  targetRotation.x = y * 0.3;
+  targetRotation.y = x * 0.2;
+  targetRotation.x = y * 0.2;
 }
 
 function onTouchMove(event) {
