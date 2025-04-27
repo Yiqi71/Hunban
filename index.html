@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>头跟鼠标动 Demo</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
+        
+
+let scene, camera, renderer;
+let head, body;
+let targetRotation = { x: 0, y: 0 };
+
+init();
+animate();
+
+function init() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf0f0f0);
+
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 1, 3);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(1, 2, 3);
+  scene.add(light);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambient);
+
+  const loader = new GLTFLoader();
+
+  // 加载身体
+  loader.load('assets/hunban-body.glb', function(gltf) {
+    body = gltf.scene;
+    scene.add(body);
+  });
+
+  // 加载头
+  loader.load('assets/hunban-head.glb', function(gltf) {
+    head = gltf.scene;
+    scene.add(head);
+  });
+
+  // 监听鼠标/触摸
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('touchmove', onTouchMove);
+  window.addEventListener('resize', onWindowResize);
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onMouseMove(event) {
+  const x = (event.clientX / window.innerWidth) * 2 - 1;
+  const y = -(event.clientY / window.innerHeight) * 2 + 1;
+  targetRotation.y = x * 0.5; // 左右转
+  targetRotation.x = y * 0.3; // 上下点头
+}
+
+function onTouchMove(event) {
+  if (event.touches.length === 1) {
+    const touch = event.touches[0];
+    const x = (touch.clientX / window.innerWidth) * 2 - 1;
+    const y = -(touch.clientY / window.innerHeight) * 2 + 1;
+    targetRotation.y = x * 0.5;
+    targetRotation.x = y * 0.3;
+  }
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (head) {
+    // 平滑旋转
+    head.rotation.y += (targetRotation.y - head.rotation.y) * 0.1;
+    head.rotation.x += (targetRotation.x - head.rotation.x) * 0.1;
+  }
+
+  renderer.render(scene, camera);
+}
+</script>
+
+</body>
+
+</html>
