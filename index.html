@@ -6,6 +6,15 @@
     <title>魂蛋小原</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'AlibabaPuHuiTi';
+            src: url('assets/fonts/AlibabaSans-Bold.otf') format('woff2'),
+                url('assets/fonts/AlibabaSans-Regular.otf') format('woff'),
+                url('assets/fonts/AlibabaSans-Medium.otf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
             font-family: 'Noto Sans SC', sans-serif;
             font-weight: 400;
@@ -69,18 +78,20 @@
 
         /* 小屏（<= 430px）调整字体大小 */
         @media (max-width: 580px) {
-            .button{
-                width:100px;
-                height:50px;
+            .button {
+                width: 100px;
+                height: 50px;
             }
-            .buttons .button img{
-                width:100px;
-                height:auto;
+
+            .buttons .button img {
+                width: 100px;
+                height: auto;
             }
+
             .buttons .button button {
                 font-size: 16px !important;
-                width:100px;
-                height:50px;
+                width: 100px;
+                height: 50px;
             }
         }
 
@@ -214,8 +225,8 @@
             const ambient = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambient);
 
-            const yellow = new THREE.AmbientLight(0xfac959, 0.1);
-            scene.add(yellow);
+            // const yellow = new THREE.AmbientLight(0xfac959, 0.1);
+            // scene.add(yellow);
 
             const loader = new THREE.GLTFLoader();
 
