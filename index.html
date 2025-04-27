@@ -466,7 +466,6 @@
                 // 归零
                 if (head) {
                     head.rotation.set(0, 0, 0);
-                    head.position.set(0, 0, 0);
                 }
             }, 800);
         }
@@ -520,8 +519,19 @@
 
         function updateHeadDirection(event) {
             if (!isPressing) return;
-            const x = (event.clientX / window.innerWidth) * 2 - 1;
-            const y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            let clientX, clientY;
+            if (event.type.startsWith('touch')) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+
+
+            const x = (clientX / window.innerWidth) * 2 - 1;
+            const y = -(clientY / window.innerHeight) * 2 + 1;
             targetRotation.headY = x * 0.3;
             targetRotation.headX = -y * 0.2;
         }
