@@ -103,7 +103,6 @@
 </head>
 
 <body>
-
     <menu>
         <img alt="logo" src="assets/logo.png" width="100">
     </menu>
@@ -167,6 +166,8 @@
         let isTickling = false;
         let tickleStartTime = 0;
         let laughSound;
+
+        let pressTimer = null;
 
         let facePlane;
         const textureLoader = new THREE.TextureLoader();
@@ -497,14 +498,17 @@
 
             const intersectsBody = raycaster.intersectObject(body, true);
             const intersectsHead = raycaster.intersectObject(headGroup, true);
+
             if (intersectsBody.length > 0 || intersectsHead.length > 0) {
-                triggerTickle();
+                pressTimer = setTimeout(() => {
+                    triggerTickle();
+                }, 500);
             } else {
                 isPressing = true;
-                updateHeadDirection({
-                    clientX,
-                    clientY
-                }); // 这里也要传对
+                // updateHeadDirection({
+                //     clientX,
+                //     clientY
+                // }); // 这里也要传对
                 window.addEventListener('mousemove', updateHeadDirection);
                 window.addEventListener('touchmove', updateHeadDirection); // 还要加这一行
             }
@@ -514,6 +518,10 @@
             isPressing = false;
             window.removeEventListener('mousemove', updateHeadDirection);
             window.removeEventListener('touchmove', updateHeadDirection);
+            if (pressTimer) {
+                clearTimeout(pressTimer); // 👉 松手了就取消挠痒定时器
+                pressTimer = null;
+            }
         }
 
 
@@ -528,7 +536,6 @@
                 clientX = event.clientX;
                 clientY = event.clientY;
             }
-
 
             const x = (clientX / window.innerWidth) * 2 - 1;
             const y = -(clientY / window.innerHeight) * 2 + 1;
