@@ -10,7 +10,7 @@ function checkScaling() {
     } else {
         scaling = heightScaling;
     }
-    console.log(scaling);
+    // console.log(scaling);
 }
 checkScaling();
 
@@ -130,7 +130,7 @@ function init() {
         headOffset.add(head);
         scene.add(headGroup);
 
-        console.log("head position in group:", head.position);
+        // console.log("head position in group:", head.position);
         createFacePlane();
     });
 
