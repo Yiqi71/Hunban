@@ -1,0 +1,119 @@
+@font-face {
+    font-family: 'AlibabaSans';
+    src: url('assets/fonts/AlibabaSans-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  html, body {
+    touch-action: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  body {
+    font-family: 'AlibabaSans', sans-serif;
+    font-weight: 400;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+  }
+  
+  #flashingLaser {
+    position: absolute;
+    opacity: 0;
+    z-index: 9;
+    background-color: #fac959;
+    filter: blur(2px);
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  
+  menu {
+    z-index: 10;
+    position: relative;
+    width: 90vw;
+  }
+  
+  #logo {
+    width: 100px;
+    position: absolute;
+    left: 0;
+  }
+  
+  canvas {
+    display: block;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .buttons {
+    position: absolute;
+    bottom: 5em;
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .button {
+    width: 120px;
+    height: 60px;
+    padding: 10px;
+  }
+  
+  .buttons .button img {
+    width: 120px;
+    height: auto;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .buttons .button button {
+    font-family: 'AlibabaSans', sans-serif;
+    font-weight: 500;
+    z-index: 10;
+    position: absolute;
+    width: 120px;
+    height: 60px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+  }
+  
+  /* 小屏适配 */
+  @media (max-width: 580px) {
+    #logo {
+      left: 20px;
+    }
+    .button {
+      width: 100px;
+      height: 50px;
+    }
+    .buttons .button img {
+      width: 100px;
+    }
+    .buttons .button button {
+      font-size: 16px !important;
+      width: 100px;
+      height: 50px;
+    }
+  }
+  
+  /* 中屏以上 */
+  @media (min-width: 581px) {
+    .buttons .button button {
+      font-size: 18px;
+    }
+  }
+  
