@@ -101,7 +101,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            color:black;
+            color: black;
         }
 
         /* 小屏（<= 430px）调整字体大小 */
@@ -738,6 +738,14 @@
             }
             if (isActionPlaying) return;
 
+            targetRotation = {
+                groupX: 0,
+                groupY: 0,
+                groupZ: 0,
+                headX: 0,
+                headY: 0,
+                headZ: 0
+            };
             let clientX, clientY;
             if (event.type.startsWith('touch')) {
                 // 触屏：从 touches[0] 拿坐标
