@@ -44,6 +44,18 @@
 
         menu {
             z-index: 10;
+            position: relative;
+            /* display: flex;
+            align-items: center;
+            justify-content: center; */
+            /* border: solid 1px white; */
+            width: 90vw;
+        }
+
+        #logo {
+            width: 100px;
+            position: absolute;
+            left: 0;
         }
 
         canvas {
@@ -90,7 +102,13 @@
         }
 
         /* 小屏（<= 430px）调整字体大小 */
-        /* @media (max-width: 580px) {
+        @media (max-width: 580px) {
+            #logo {
+                width: 100px;
+                position: absolute;
+                left: 20px;
+            }
+
             .button {
                 width: 100px;
                 height: 50px;
@@ -106,7 +124,7 @@
                 width: 100px;
                 height: 50px;
             }
-        } */
+        }
 
         /* 中屏以上 (> 430px) 调整字体大小 */
         @media (min-width: 581px) {
@@ -119,7 +137,7 @@
 
 <body>
     <menu>
-        <img alt="logo" src="assets/logo.png" width="100">
+        <img id="logo" alt="logo" src="assets/logo-yellow.png" width=50>
     </menu>
     <canvas id="xiaoyuan"></canvas>
     <div class="buttons">
@@ -283,10 +301,36 @@
         }
 
         // 适应窗口大小变化
+        function adjustCameraPosition() {
+            const baseWidth = 1440; // 你设计时的参考宽度，比如1440px
+            const scaleFactor = window.innerWidth / baseWidth;
+
+            if (camera) {
+                camera.position.z = 3 / scaleFactor; // 原来是3，现在根据比例缩放
+            }
+        }
+
+
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            // camera.aspect = window.innerWidth / window.innerHeight;
+            // camera.updateProjectionMatrix();
+            // renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+
+            // 根据窗口比例，调整camera视角大小
+            if (camera) {
+                if (width < 600) {
+                    camera.fov = 60; // 小屏幕，比如手机，视角开大一点
+                } else {
+                    camera.fov = 45; // 大屏幕，正常
+                }
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            }
+
         }
 
         function smoothStep(progress) {
@@ -450,7 +494,7 @@
             let startTime = Date.now();
             let actionDuration = 3000; // 默认
             if (type === 'greet') {
-                actionDuration = 1000;
+                actionDuration = 1100;
             } else if (type === 'happy') {
                 actionDuration = 1500;
             } else if (type === 'think') {
@@ -477,25 +521,26 @@
                 const progress = elapsed / actionDuration; // 0 ~ 1之间
 
                 if (type === 'greet') {
-                    if (progress < 0.32) {
+                    if (progress < 0.35) {
                         // 阶段1：反方向蓄力（更久更大）
-                        const subProgress = progress / 0.32; // 0 ~ 1
-                        targetRotation.groupZ = 0.45 * subProgress; // 从0到0.3弧度（约17度）
-                        targetRotation.groupX = -0.25 * subProgress; // 更明显往后仰
-                        headGroup.rotation.z = 0.45 * subProgress; // 从0到0.3弧度（约17度）
-                        headGroup.rotation.x = -0.25 * subProgress; // 更明显往后仰
+                        const subProgress = progress / 0.35; // 0 ~ 1
+                        const eased = Math.sin((subProgress * Math.PI) / 2);
+                        targetRotation.groupZ = 0.45 * eased; // 从0到0.3弧度（约17度）
+                        targetRotation.groupX = -0.25 * eased; // 更明显往后仰
+                        headGroup.rotation.z = 0.45 * eased; // 从0到0.3弧度（约17度）
+                        headGroup.rotation.x = -0.25 * eased; // 更明显往后仰
                     } else if (progress < 0.5) {
                         // 阶段2：快速小幅度到右边最大角度
                         const subProgress = (progress - 0.32) / (0.5 - 0.32); // 0 ~ 1
                         const eased = Math.sin((subProgress * Math.PI) / 2);
-                        headGroup.rotation.z = 0.45 - 0.6 * eased;
-                        headGroup.rotation.x = -0.25 + 0.4 * eased;
-                        targetRotation.groupZ = 0.45 - 0.6 * eased;
-                        targetRotation.groupX = -0.25 + 0.4 * eased;
+                        headGroup.rotation.z = 0.45 - 0.65 * eased;
+                        headGroup.rotation.x = -0.25 + 0.45 * eased;
+                        targetRotation.groupZ = 0.45 - 0.65 * eased;
+                        targetRotation.groupX = -0.25 + 0.45 * eased;
                     } else {
                         // 阶段3：停在右边，维持姿势
-                        targetRotation.groupZ = -0.15;
-                        targetRotation.groupX = 0.15;
+                        targetRotation.groupZ = -0.2;
+                        targetRotation.groupX = 0.2;
 
                     }
 
