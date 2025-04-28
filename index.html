@@ -245,6 +245,7 @@
 
         // 初始化xiaoyuan
         function init() {
+            laughSound = new Audio('assets/giggling-6799.mp3');
             scene = new THREE.Scene();
             scene.background = new THREE.Color("black");
 
@@ -419,6 +420,7 @@
                     intensity = Math.max(0, 1 - fadeElapsed / fadeDuration); // 从1逐渐减到0
                     if (intensity === 0) {
                         isTickling = false; // 收尾完成，停止tickle
+                        laughSound.pause();
 
                         targetRotation = {
                             groupX: 0,
@@ -649,7 +651,8 @@
             tickleStartTime = Date.now();
 
             if (laughSound) {
-                laughSound.currentTime = 0;
+                console.log("soundPlayed");
+                laughSound.currentTime = 2.5;
                 laughSound.play();
             }
 
