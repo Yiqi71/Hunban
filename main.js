@@ -42,7 +42,7 @@ let laughSound;
 
 let pressTimer = null;
 
-let jumpOffset = 0; // 控制跳跃的额外偏移量
+let jumpOffset = 0;
 
 let facePlane;
 const textureLoader = new THREE.TextureLoader();
@@ -56,11 +56,11 @@ function createFacePlane() {
         side: THREE.DoubleSide // 双面可见，防止旋转后消失
     });
 
-    const faceGeometry = new THREE.PlaneGeometry(0.18, 0.1); // 宽高可以调整
+    const faceGeometry = new THREE.PlaneGeometry(0.18, 0.1);
     facePlane = new THREE.Mesh(faceGeometry, faceMaterial);
 
-    facePlane.position.set(0, 0.15, 0.5); // 按头的位置微调
-    head.add(facePlane); // 直接加在head上！
+    facePlane.position.set(0, 0.15, 0.5);
+    head.add(facePlane);
 }
 
 // 眨眼
@@ -99,7 +99,6 @@ function init() {
         antialias: true
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    // document.body.appendChild(renderer.domElement);
 
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(1, 2, 3);
@@ -135,7 +134,6 @@ function init() {
         createFacePlane();
     });
 
-
     window.addEventListener('resize', onWindowResize);
     window.addEventListener('mousedown', onPressStart);
     window.addEventListener('mouseup', onPressEnd);
@@ -144,22 +142,7 @@ function init() {
     window.addEventListener('touchend', onPressEnd);
 }
 
-// 适应窗口大小变化
-function adjustCameraPosition() {
-    const baseWidth = 1440; // 你设计时的参考宽度，比如1440px
-    const scaleFactor = window.innerWidth / baseWidth;
-
-    if (camera) {
-        camera.position.z = 3 / scaleFactor; // 原来是3，现在根据比例缩放
-    }
-}
-
-
 function onWindowResize() {
-    // camera.aspect = window.innerWidth / window.innerHeight;
-    // camera.updateProjectionMatrix();
-    // renderer.setSize(window.innerWidth, window.innerHeight);
-
     const width = window.innerWidth;
     const height = window.innerHeight;
     renderer.setSize(width, height);
@@ -251,31 +234,23 @@ function animate() {
     if (isTickling) {
         const now = Date.now();
         const elapsed = (now - tickleStartTime) / 1000; // 秒数
-        const tickleDuration = 1.0; // 挠痒总时长（秒）
+        const tickleDuration = 1.0;
 
         let intensity = 1.0;
         facePlane.material.map = faceTextures.laugh;
         facePlane.scale.set(1.5, 1, 1);
+        // is 后开始减速
         if (elapsed > tickleDuration) {
-            // 渐变收尾，超过tickleDuration后开始减少
             const fadeElapsed = elapsed - tickleDuration;
-            const fadeDuration = 1.0; // 收尾渐变时间（秒）
-            intensity = Math.max(0, 1 - fadeElapsed / fadeDuration); // 从1逐渐减到0
+            const fadeDuration = 1.0; 
+            intensity = Math.max(0, 1 - fadeElapsed / fadeDuration); 
             if (intensity === 0) {
-                isTickling = false; // 收尾完成，停止tickle
+                isTickling = false; 
                 laughSound.pause();
+                resetTargetRotation();
 
-                targetRotation = {
-                    groupX: 0,
-                    groupY: 0,
-                    groupZ: 0,
-                    headX: 0,
-                    headY: 0,
-                    headZ: 0
-                };
-                // body.position.set(0, 0.5, 0);
                 const targetVec = new THREE.Vector3(0, 0.5, 0);
-                body.position.lerp(targetVec, 0.1); // 每帧靠近目标
+                body.position.lerp(targetVec, 0.1); 
             }
         }
 
@@ -284,17 +259,14 @@ function animate() {
             facePlane.scale.set(1, 1, 1);
         }
 
-        // 整体Group小幅度快速左右摇摆
         headGroup.rotation.z = Math.sin((now - tickleStartTime) * 0.05 * (0.4 * intensity + 0.6)) * 0.07 *
             intensity;
         headGroup.rotation.x = Math.sin((now - tickleStartTime) * 0.03 * (0.4 * intensity + 0.6)) * 0.08 *
             intensity;
 
-        // 头部叠加更细微的颤动
         head.rotation.z = Math.sin((now - tickleStartTime) * 0.08 * (0.4 * intensity + 0.6)) * 0.05 * intensity;
         head.rotation.x = Math.sin((now - tickleStartTime) * 0.06 * (0.4 * intensity + 0.6)) * 0.03 * intensity;
 
-        // 身体轻微晃动
         body.position.z = Math.sin((now - tickleStartTime) * 0.08 * (0.4 * intensity + 0.6)) * 0.05 * intensity;
         body.position.x = Math.sin((now - tickleStartTime) * 0.06 * (0.4 * intensity + 0.6)) * 0.04 * intensity;
     }
@@ -324,11 +296,11 @@ function triggerAction(type) {
     isReturning = true;
     returnStartTime = Date.now();
 
+    // 归零时间 0.5s
     setTimeout(() => {
-        // ✨ 等归零一段时间后再开始新动作
         isReturning = false;
         startAction(type);
-    }, 500); // 归零时间，比如0.5秒
+    }, 500); 
 }
 
 function startAction(type) {
@@ -346,21 +318,6 @@ function startAction(type) {
         actionDuration = 3000;
     }
 
-
-    // 切换表情
-    if (facePlane && facePlane.material) {
-        if (type === 'happy') {
-            facePlane.material.map = faceTextures.smile;
-            facePlane.scale.set(1.3, 0.6, 1);
-        } else if (type === 'jump') {
-            facePlane.material.map = faceTextures.smile;
-            facePlane.scale.set(1.3, 0.6, 1);
-        } else {
-            facePlane.material.map = faceTextures.default;
-            facePlane.scale.set(1, 1, 1);
-        }
-        facePlane.material.needsUpdate = true;
-    }
     // 设置不同动作
     function updateAction() {
         const elapsed = (Date.now() - startTime); // 0~1之间
@@ -368,28 +325,27 @@ function startAction(type) {
 
         if (type === 'greet') {
             if (progress < 0.35) {
-                // 阶段1：反方向蓄力（更久更大）
-                const subProgress = progress / 0.35; // 0 ~ 1
+                // 蓄力
+                const subProgress = progress / 0.35; 
                 const eased = Math.sin((subProgress * Math.PI) / 2);
-                targetRotation.groupZ = 0.45 * eased; // 从0到0.3弧度（约17度）
-                targetRotation.groupX = -0.25 * eased; // 更明显往后仰
-                headGroup.rotation.z = 0.45 * eased; // 从0到0.3弧度（约17度）
-                headGroup.rotation.x = -0.25 * eased; // 更明显往后仰
+                targetRotation.groupZ = 0.45 * eased; 
+                targetRotation.groupX = -0.25 * eased; 
+                headGroup.rotation.z = 0.45 * eased; 
+                headGroup.rotation.x = -0.25 * eased; 
             } else if (progress < 0.5) {
-                // 阶段2：快速小幅度到右边最大角度
-                const subProgress = (progress - 0.32) / (0.5 - 0.32); // 0 ~ 1
+                // 向右
+                const subProgress = (progress - 0.32) / (0.5 - 0.32); 
                 const eased = Math.sin((subProgress * Math.PI) / 2);
                 headGroup.rotation.z = 0.45 - 0.65 * eased;
                 headGroup.rotation.x = -0.25 + 0.45 * eased;
                 targetRotation.groupZ = 0.45 - 0.65 * eased;
                 targetRotation.groupX = -0.25 + 0.45 * eased;
             } else {
-                // 阶段3：停在右边，维持姿势
+                // 停在右边
                 targetRotation.groupZ = -0.2;
                 targetRotation.groupX = 0.2;
-
             }
-
+            // 换表情 wink
             if (progress > 0.99) {
                 targetRotation.groupZ = 0;
                 targetRotation.groupX = 0;
@@ -399,11 +355,14 @@ function startAction(type) {
                     facePlane.material.needsUpdate = true;
                 }
             } else if (progress > 0.45) {
-                // wink
                 facePlane.material.map = faceTextures.greet;
                 facePlane.scale.set(1.01, 1, 1);
             }
         } else if (type === 'happy') {
+            // 换表情
+            facePlane.material.map = faceTextures.smile;
+            facePlane.scale.set(1.3, 0.6, 1);
+
             targetRotation.groupZ = 0.3 * Math.sin(progress * Math.PI * 4);
             if (progress > 0.95) {
                 if (facePlane) {
@@ -413,16 +372,17 @@ function startAction(type) {
                 }
             }
         } else if (type === 'jump') {
-            // ✨ happy：跳跃两次
-            let jumpHeight = 0.7; // 主跳高度（可以自己调）
+            // 换表情
+            facePlane.material.map = faceTextures.smile;
+            facePlane.scale.set(1.3, 0.6, 1);
+            // happy：跳跃两次
+            let jumpHeight = 0.7; // 主跳高度
             let smallJumpHeight = 0.4; // 次跳高度
 
             if (progress < 0.7) {
-                // 第一跳（0% - 50%）
-                const subProgress = progress / 0.7; // 0~1
+                const subProgress = progress / 0.7;
                 if (subProgress < 0.4) {
-                    // 蓄力阶段（0~0.5）
-                    const down = Math.sin(subProgress * Math.PI) * 0.1; // 向下压缩一点
+                    const down = Math.sin(subProgress * Math.PI) * 0.1;
                     jumpOffset = -down;
                 } else {
                     const upProgress = (subProgress - 0.4) * 2;
@@ -430,28 +390,27 @@ function startAction(type) {
                     jumpOffset = height;
                 }
             } else {
-                // 第二跳（50% - 100%）
-                const subProgress = (progress - 0.7) / 0.3; // 0~1
+                const subProgress = (progress - 0.7) / 0.3; 
                 const height = smallJumpHeight * Math.sin(subProgress * Math.PI);
                 jumpOffset = height;
             }
 
 
-            // ✨ 头部滞后跟随（带弹性）
+            // 头部滞后跟随
             const bodyYTarget = 0.5 + jumpOffset;;
             const headY = headGroup.position.y;
             const diff = bodyYTarget - headY;
-            headGroup.position.y += diff * 0.15; // 越小越滞后
+            headGroup.position.y += diff * 0.29; // 越小越滞后
             headGroup.rotation.x = -diff * 0.05; // 根据上下差值微微抬头低头（增强调性）
 
-            // ✨ 动作快结束时，加一点小弹动
+            // 动作快结束时，加一点小弹动
             if (progress > 0.9) {
                 const t = (progress - 0.9) / 0.1; // 0~1
                 const bounce = Math.sin(t * Math.PI * 3) * (1 - t) * 0.02; // 小幅度弹动，幅度逐渐减小
                 jumpOffset += bounce;
             }
 
-            // ✨ 恢复表情
+            // 恢复表情
             if (progress > 0.95) {
                 if (facePlane) {
                     facePlane.material.map = faceTextures.default;
@@ -459,41 +418,33 @@ function startAction(type) {
                     facePlane.material.needsUpdate = true;
                 }
             }
-
-
         } else if (type === 'sad') {
             if (facePlane && facePlane.scale) {
                 if (progress < 0.15) {
-                    // ✨ 0~25%：眼睛放大再回缩
+                    // 眼睛放大再回缩
                     const expand = progress < 0.075 ? (progress / 0.075) : (1 - (progress - 0.075) / 0.075);
-                    const scaleFactor = 1 + expand * 0.3; // 最多放大到2.5倍
+                    const scaleFactor = 1 + expand * 0.3; 
                     facePlane.scale.set(1, 1 * scaleFactor, 1);
                 } else if (progress >= 0.15 && progress < 0.3) {
-                    // ✨ 25%~50%：停顿，眼睛恢复正常
+                    // 停顿，眼睛恢复正常
                     facePlane.scale.set(1, 1, 1);
                     targetRotation.headX = 0;
                     targetRotation.headY = 0;
                 } else if (progress >= 0.3 && progress < 0.54) {
-                    // ✨ 50%~90%：开始慢慢向右下方低头
+                    // 慢慢向右下方低头
                     facePlane.scale.set(1, 1, 1);
-                    const moveProgress = (progress - 0.3) / 0.24; // 从0到1
+                    const moveProgress = (progress - 0.3) / 0.24; 
                     targetRotation.headX = 0.2 * moveProgress;
                     targetRotation.headY = 0.12 * moveProgress;
                     targetRotation.groupX = 0.3 * moveProgress;
                     targetRotation.groupY = 0.1 * moveProgress;
                     targetRotation.groupZ = -0.1 * moveProgress;
                 } else {
-                    // ✨ 90%~100%：眨眼
-
-                    // if (progress >= 0.8) {
-                    //     const blinkProgress = (progress - 0.8) / 0.1;
-                    //     const scaleY = 1 - 0.6 * Math.sin(blinkProgress * Math.PI/2);
-                    //     facePlane.scale.set(1, scaleY, 1);
-                    // }
+                    // 摇头+眨眼
                     const shakeProgress = (progress - 0.54) / 0.46;
-                    const shake = Math.sin(shakeProgress * Math.PI * 3) * 0.08; // 摆动2次，幅度±0.05弧度
-                    targetRotation.headY = 0.12 + shake; // 在原本低头右偏的基础上左右轻轻摆动
-                    targetRotation.headX = 0.2; // 保持低头
+                    const shake = Math.sin(shakeProgress * Math.PI * 3) * 0.08; // 摆动2次
+                    targetRotation.headY = 0.12 + shake; 
+                    targetRotation.headX = 0.2; 
                     targetRotation.groupX = 0.3;
                     targetRotation.groupY = 0.1;
                     targetRotation.groupZ = -0.1;
@@ -521,13 +472,11 @@ function startAction(type) {
                 targetRotation.headX = -0.2 * moveProgress;
                 targetRotation.headY = 0.1 * moveProgress;
             }
-
         }
 
         if (elapsed < actionDuration) {
             requestAnimationFrame(updateAction);
         } else {
-            // 动作结束
             isActionPlaying = false;
         }
     }
@@ -536,16 +485,12 @@ function startAction(type) {
 
 // 挠痒痒
 function triggerTickle() {
-    if (isTickling) return; // 如果正在挠，不要重复挠
+    if (isTickling) return;
 
     isTickling = true;
     tickleStartTime = Date.now();
 
-    if (laughSound) {
-        console.log("soundPlayed");
-        laughSound.currentTime = 0;
-        laughSound.play();
-    }
+    playSound(laughSound);
 }
 
 // 目光跟随
@@ -561,15 +506,20 @@ let flashingLaserOpacity = 0;
 let flashingLaserGrowing = true;
 let flashingLaserAnimaId = null;
 
+const LASER_MAX_SCALE = 1.4;
+const LASER_MIN_SCALE = 1.0;
+const LASER_SCALE_SPEED_UP = 0.01;
+const LASER_SCALE_SPEED_DOWN = 0.02;
+
 function animateLaser() {
     if (flashingLaserGrowing) {
-        flashingLaserScale += 0.015;
-        flashingLaserOpacity += 0.05;
-        if (flashingLaserScale >= 1.4) flashingLaserGrowing = false;
+        flashingLaserScale += LASER_SCALE_SPEED_UP;
+        flashingLaserOpacity += LASER_SCALE_SPEED_UP*3;
+        if (flashingLaserScale >= LASER_MAX_SCALE) flashingLaserGrowing = false;
     } else {
-        flashingLaserScale -= 0.025;
-        flashingLaserOpacity -= 0.07;
-        if (flashingLaserScale <= 1) flashingLaserGrowing = true;
+        flashingLaserScale -= LASER_SCALE_SPEED_DOWN;
+        flashingLaserOpacity -= LASER_SCALE_SPEED_DOWN*3;
+        if (flashingLaserScale <= LASER_MIN_SCALE) flashingLaserGrowing = true;
     }
 
     flashingLaser.style.transform = `scale(${flashingLaserScale})`;
@@ -577,39 +527,21 @@ function animateLaser() {
 
     flashingLaserAnimaId = requestAnimationFrame(animateLaser);
 }
-// animateLaser(); // 开始闪烁动画
 
+// 点击后的判断
 function onPressStart(event) {
-    // 如果点击的是button元素，就不处理
     if (event.target.tagName === 'BUTTON' || event.target.closest('button')) {
         return;
     }
     if (isActionPlaying) return;
 
-    targetRotation = {
-        groupX: 0,
-        groupY: 0,
-        groupZ: 0,
-        headX: 0,
-        headY: 0,
-        headZ: 0
-    };
-    let clientX, clientY;
-    if (event.type.startsWith('touch')) {
-        // 触屏：从 touches[0] 拿坐标
-        clientX = event.touches[0].clientX;
-        clientY = event.touches[0].clientY;
-    } else {
-        // 鼠标：直接拿
-        clientX = event.clientX;
-        clientY = event.clientY;
-    }
+    resetTargetRotation();
+
+    const { x: clientX, y: clientY } = getClientPosition(event);
 
     // 更新鼠标坐标（归一化）
     mouse.x = (clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(clientY / window.innerHeight) * 2 + 1;
-
-
 
     raycaster.setFromCamera(mouse, camera);
 
@@ -628,7 +560,7 @@ function onPressStart(event) {
         flashingLaser.style.top = `${clientY - flashingLaser.offsetHeight / 2}px`;
         flashingLaser.style.zIndex = 19;
         window.addEventListener('mousemove', updateHeadDirection);
-        window.addEventListener('touchmove', updateHeadDirection); // 还要加这一行
+        window.addEventListener('touchmove', updateHeadDirection);
     }
 }
 
@@ -641,23 +573,16 @@ function onPressEnd(event) {
     window.removeEventListener('mousemove', updateHeadDirection);
     window.removeEventListener('touchmove', updateHeadDirection);
     if (pressTimer) {
-        clearTimeout(pressTimer); // 👉 松手了就取消挠痒定时器
+        clearTimeout(pressTimer);
         pressTimer = null;
     }
 }
 
-
 function updateHeadDirection(event) {
     if (!isPressing) return;
 
-    let clientX, clientY;
-    if (event.type.startsWith('touch')) {
-        clientX = event.touches[0].clientX;
-        clientY = event.touches[0].clientY;
-    } else {
-        clientX = event.clientX;
-        clientY = event.clientY;
-    }
+    const { x: clientX, y: clientY } = getClientPosition(event);
+
     flashingLaser.style.left = `${clientX - flashingLaser.offsetWidth / 2}px`;
     flashingLaser.style.top = `${clientY - flashingLaser.offsetHeight / 2}px`;
 
@@ -665,4 +590,36 @@ function updateHeadDirection(event) {
     const y = -(clientY / window.innerHeight) * 2 + 1;
     targetRotation.headY = x * 0.3;
     targetRotation.headX = -y * 0.2;
+}
+
+function getClientPosition(event) {
+    if (event.type.startsWith('touch')) {
+        return {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY
+        };
+    } else {
+        return {
+            x: event.clientX,
+            y: event.clientY
+        };
+    }
+}
+
+function playSound(sound) {
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play();
+    }
+}
+
+function resetTargetRotation() {
+    targetRotation = {
+        groupX: 0,
+        groupY: 0,
+        groupZ: 0,
+        headX: 0,
+        headY: 0,
+        headZ: 0
+    };
 }
