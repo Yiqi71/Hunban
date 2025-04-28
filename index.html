@@ -238,7 +238,8 @@
         const faceTextures = {
             default: textureLoader.load('assets/default.png'),
             greet: textureLoader.load('assets/wink.png'),
-            laugh: textureLoader.load('assets/laugh.png')
+            laugh: textureLoader.load('assets/laugh.png'),
+            smile: textureLoader.load('assets/smile.png')
         };
 
 
@@ -507,8 +508,8 @@
             // 切换表情
             if (facePlane && facePlane.material) {
                 if (type === 'happy') {
-                    facePlane.material.map = faceTextures.laugh;
-                    facePlane.scale.set(1.5, 1, 1);
+                    facePlane.material.map = faceTextures.smile;
+                    facePlane.scale.set(1.3, 0.6, 1);
                 } else {
                     facePlane.material.map = faceTextures.default;
                     facePlane.scale.set(1, 1, 1);
