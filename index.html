@@ -42,6 +42,17 @@
             align-items: center;
         }
 
+        #flashingLaser {
+            position: absolute;
+            opacity: 0;
+            z-index: 9;
+            background-color: #fac959;
+            filter: blur(2px);
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            /* ✨让出现和消失更柔和 */
+        }
+
         menu {
             z-index: 10;
             position: relative;
@@ -139,6 +150,7 @@
 </head>
 
 <body>
+    <div id="flashingLaser"></div>
     <menu>
         <img id="logo" alt="logo" src="assets/logo-yellow.png" width=50>
     </menu>
@@ -185,6 +197,23 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <script>
+        let scaling = 0.26;
+
+        function checkScaling() {
+            let windowWidth = window.innerWidth;
+            let windowHeight = window.innerHeight;
+            let widthScaling = windowWidth / 2546;
+            let heightScaling = windowHeight / 3218;
+            if (widthScaling < heightScaling) {
+                scaling = widthScaling;
+            } else {
+                scaling = heightScaling;
+            }
+            console.log(scaling);
+        }
+        checkScaling();
+
+
         const canvas = document.getElementById("xiaoyuan");
 
         let scene, camera, renderer;
@@ -731,8 +760,38 @@
         }
 
         // 目光跟随
+        // 光
+        let flashingLaser = document.getElementById("flashingLaser");
+
+        flashingLaser.style.width = `${scaling*15/0.19}px`;
+        flashingLaser.style.height = `${scaling*15/0.19}px`;
+        flashingLaser.style.borderRadius = `${scaling*7.5/0.19}px`;
+
+        let flashingLaserScale = 1;
+        let flashingLaserOpacity = 0;
+        let flashingLaserGrowing = true;
+        let flashingLaserAnimaId = null;
+
+        function animateLaser() {
+            if (flashingLaserGrowing) {
+                flashingLaserScale += 0.015;
+                flashingLaserOpacity += 0.05;
+                if (flashingLaserScale >= 1.4) flashingLaserGrowing = false;
+            } else {
+                flashingLaserScale -= 0.025;
+                flashingLaserOpacity -= 0.07;
+                if (flashingLaserScale <= 1) flashingLaserGrowing = true;
+            }
+
+            flashingLaser.style.transform = `scale(${flashingLaserScale})`;
+            flashingLaser.style.opacity = flashingLaserOpacity;
+
+            flashingLaserAnimaId = requestAnimationFrame(animateLaser);
+        }
+        // animateLaser(); // 开始闪烁动画
+
         function onPressStart(event) {
-            // 新加：如果点击的是button元素，就不处理
+            // 如果点击的是button元素，就不处理
             if (event.target.tagName === 'BUTTON' || event.target.closest('button')) {
                 return;
             }
@@ -761,6 +820,12 @@
             mouse.x = (clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
+            flashingLaser.style.opacity = 1;
+            animateLaser();
+            flashingLaser.style.left = `${clientX - flashingLaser.offsetWidth / 2}px`;
+            flashingLaser.style.top = `${clientY - flashingLaser.offsetHeight / 2}px`;
+            flashingLaser.style.zIndex = 19;
+
             raycaster.setFromCamera(mouse, camera);
 
             const intersectsBody = raycaster.intersectObject(body, true);
@@ -779,6 +844,10 @@
 
         function onPressEnd(event) {
             isPressing = false;
+
+            cancelAnimationFrame(flashingLaserAnimaId);
+            flashingLaser.style.opacity = 0;
+
             window.removeEventListener('mousemove', updateHeadDirection);
             window.removeEventListener('touchmove', updateHeadDirection);
             if (pressTimer) {
@@ -799,6 +868,8 @@
                 clientX = event.clientX;
                 clientY = event.clientY;
             }
+            flashingLaser.style.left = `${clientX - flashingLaser.offsetWidth / 2}px`;
+            flashingLaser.style.top = `${clientY - flashingLaser.offsetHeight / 2}px`;
 
             const x = (clientX / window.innerWidth) * 2 - 1;
             const y = -(clientY / window.innerHeight) * 2 + 1;
