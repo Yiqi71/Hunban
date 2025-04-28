@@ -13,6 +13,20 @@
             font-style: normal;
         }
 
+        html,
+        body {
+            touch-action: none;
+            /* 禁止浏览器默认手势（滑动/缩放/双指操作） */
+            -webkit-user-select: none;
+            /* iOS Safari 禁止选中 */
+            -ms-user-select: none;
+            /* IE禁用选中 */
+            user-select: none;
+            /* 标准禁用选中 */
+            -webkit-touch-callout: none;
+            /* iOS Safari 禁止长按弹出菜单 */
+        }
+
         body {
             user-select: none;
             font-family: 'AlibabaSans', sans-serif;
@@ -76,7 +90,7 @@
         }
 
         /* 小屏（<= 430px）调整字体大小 */
-        @media (max-width: 580px) {
+        /* @media (max-width: 580px) {
             .button {
                 width: 100px;
                 height: 50px;
@@ -92,7 +106,7 @@
                 width: 100px;
                 height: 50px;
             }
-        }
+        } */
 
         /* 中屏以上 (> 430px) 调整字体大小 */
         @media (min-width: 581px) {
