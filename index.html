@@ -749,15 +749,6 @@
                 laughSound.currentTime = 0;
                 laughSound.play();
             }
-
-            // 0.8秒后停止挠
-            // setTimeout(() => {
-            //     isTickling = false;
-            //     // 归零
-            //     if (head) {
-            //         head.rotation.set(0, 0, 0);
-            //     }
-            // }, 2000);
         }
 
         // 目光跟随
@@ -821,11 +812,7 @@
             mouse.x = (clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
-            flashingLaser.style.opacity = 1;
-            animateLaser();
-            flashingLaser.style.left = `${clientX - flashingLaser.offsetWidth / 2}px`;
-            flashingLaser.style.top = `${clientY - flashingLaser.offsetHeight / 2}px`;
-            flashingLaser.style.zIndex = 19;
+
 
             raycaster.setFromCamera(mouse, camera);
 
@@ -838,6 +825,11 @@
                 }, 200);
             } else {
                 isPressing = true;
+                flashingLaser.style.opacity = 1;
+                animateLaser();
+                flashingLaser.style.left = `${clientX - flashingLaser.offsetWidth / 2}px`;
+                flashingLaser.style.top = `${clientY - flashingLaser.offsetHeight / 2}px`;
+                flashingLaser.style.zIndex = 19;
                 window.addEventListener('mousemove', updateHeadDirection);
                 window.addEventListener('touchmove', updateHeadDirection); // 还要加这一行
             }
